@@ -13,4 +13,6 @@ class InMemoryAccountsRepository : AccountsRepository {
         accounts[account.id] = account
         return Mono.just(account)
     }
+
+    override fun getAccount(accountId: AccountId): Mono<Account> = Mono.justOrEmpty(accounts[accountId])
 }
