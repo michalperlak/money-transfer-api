@@ -4,7 +4,6 @@ import nl.jqno.equalsverifier.EqualsVerifier
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.lang.IllegalArgumentException
 import java.math.BigDecimal
 
 internal class MoneyTest {
