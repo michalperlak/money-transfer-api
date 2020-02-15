@@ -10,7 +10,7 @@ import pl.michalperlak.moneytransfer.dto.NewAccountDto
 import pl.michalperlak.moneytransfer.error.AccountCreationError
 import pl.michalperlak.moneytransfer.repo.InMemoryAccountsRepository
 import reactor.core.publisher.Mono
-import java.util.*
+import java.util.UUID
 
 internal class AccountCreationTest {
 

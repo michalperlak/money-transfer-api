@@ -2,7 +2,7 @@ package pl.michalperlak.moneytransfer.core.domain
 
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_EVEN
-import java.util.*
+import java.util.Objects
 
 class Money private constructor(
         private val value: BigDecimal

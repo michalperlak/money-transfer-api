@@ -1,7 +1,9 @@
 package pl.michalperlak.moneytransfer.core.domain
 
 import nl.jqno.equalsverifier.EqualsVerifier
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal

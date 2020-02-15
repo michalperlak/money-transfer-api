@@ -5,7 +5,7 @@ import nl.jqno.equalsverifier.EqualsVerifier
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
-import java.util.*
+import java.util.UUID
 
 internal class AccountIdTest {
 

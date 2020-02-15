@@ -1,7 +1,7 @@
 package pl.michalperlak.moneytransfer.core.domain
 
 import arrow.core.getOrElse
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
