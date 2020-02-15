@@ -19,6 +19,8 @@ class Money private constructor(
 
     override fun hashCode(): Int = Objects.hash(value)
 
+    override fun toString(): String = "Money[${asString()}]"
+
     operator fun compareTo(other: Money): Int {
         return value.compareTo(other.value)
     }

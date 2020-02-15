@@ -13,7 +13,12 @@ class Account(
         get() = balanceRef.get()
 
     fun deposit(amount: Money) {
-        val currentBalance = balance
-        balanceRef.set(currentBalance + amount)
+        while (true) {
+            val currentBalance = balanceRef.get()
+            val newBalance = currentBalance + amount
+            if (balanceRef.compareAndSet(currentBalance, newBalance)) {
+                break
+            }
+        }
     }
 }

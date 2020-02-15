@@ -20,5 +20,18 @@ internal class AccountDepositTest {
         assertEquals(depositValue, account.balance)
     }
 
+    @Test
+    fun `account deposit should be thread safe`() {
+        // given
+        val account = createAccount()
+        assumeTrue(Money.ZERO == account.balance)
 
+        // when
+        executeConcurrently(100) {
+            account.deposit(Money.of(1))
+        }
+
+        // then
+        assertEquals(Money.of(100), account.balance)
+    }
 }
