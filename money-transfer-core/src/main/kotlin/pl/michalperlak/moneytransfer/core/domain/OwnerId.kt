@@ -2,7 +2,7 @@ package pl.michalperlak.moneytransfer.core.domain
 
 import arrow.core.Either
 import pl.michalperlak.moneytransfer.core.util.of
-import java.util.UUID
+import java.util.*
 
 data class OwnerId internal constructor(private val id: UUID) {
     override fun toString(): String = id.toString()
