@@ -1,6 +1,7 @@
 package pl.michalperlak.moneytransfer.app
 
 import arrow.core.Either
+import arrow.core.getOrElse
 import pl.michalperlak.moneytransfer.core.domain.Account
 import pl.michalperlak.moneytransfer.core.domain.AccountId
 import pl.michalperlak.moneytransfer.core.domain.OwnerId
@@ -28,4 +29,17 @@ class AccountsService(
             accountsRepository
                     .saveAccount(account)
                     .map { it.toDto() }
+
+    fun getAccount(id: String): Mono<AccountDto> {
+        val accountId = AccountId.of(id)
+        return accountId
+                .map { findAccount(it) }
+                .getOrElse { Mono.empty() }
+    }
+
+    private fun findAccount(accountId: AccountId): Mono<AccountDto> =
+            accountsRepository
+                    .getAccount(accountId)
+                    .map { it.toDto() }
+
 }

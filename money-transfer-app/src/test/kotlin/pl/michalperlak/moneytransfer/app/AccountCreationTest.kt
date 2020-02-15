@@ -8,7 +8,6 @@ import pl.michalperlak.moneytransfer.core.domain.Currency
 import pl.michalperlak.moneytransfer.dto.AccountDto
 import pl.michalperlak.moneytransfer.dto.NewAccountDto
 import pl.michalperlak.moneytransfer.error.AccountCreationError
-import pl.michalperlak.moneytransfer.repo.InMemoryAccountsRepository
 import reactor.core.publisher.Mono
 import java.util.UUID
 
@@ -43,8 +42,6 @@ internal class AccountCreationTest {
             assertEquals("0.00", it.balance)
         }
     }
-
-    private fun createAccountsService(): AccountsService = AccountsService(InMemoryAccountsRepository())
 
     private fun assertResult(result: Either<AccountCreationError, Mono<AccountDto>>, assertsCall: (AccountDto) -> Unit) {
         when (result) {

@@ -25,6 +25,7 @@ class AccountsHandler(
     override fun register(routes: HttpServerRoutes): HttpServerRoutes {
         return routes
                 .post(CREATE_ACCOUNT_PATH, this::createAccount)
+                .get(GET_ACCOUNT_PATH, this::getAccount)
     }
 
     private fun createAccount(request: HttpServerRequest, response: HttpServerResponse): Publisher<Void> {
@@ -42,7 +43,7 @@ class AccountsHandler(
         return accountsService
                 .createAccount(newAccount)
                 .map {
-                    it.map {  accountDto ->
+                    it.map { accountDto ->
                         ResponseSpec(
                                 status = HttpResponseStatus.CREATED,
                                 headers = jsonContentType().location("$BASE_ACCOUNTS_PATH/${accountDto.id}")
@@ -72,6 +73,30 @@ class AccountsHandler(
         )
     }
 
+    private fun getAccount(request: HttpServerRequest, response: HttpServerResponse): Publisher<Void> {
+        val accountId = request.param(ACCOUNT_ID_PATH_VARIABLE)
+        return Mono
+                .justOrEmpty(accountId)
+                .flatMap { accountsService.getAccount(it!!) }
+                .map {
+                    ResponseSpec(
+                            status = HttpResponseStatus.OK,
+                            headers = jsonContentType(),
+                            body = Option.just(jsonMapper.write(it))
+                    )
+                }
+                .defaultIfEmpty(
+                        ResponseSpec(
+                                status = HttpResponseStatus.NOT_FOUND,
+                                headers = jsonContentType(),
+                                body = Option.just(
+                                        error("Account with id: $accountId not found")
+                                )
+                        )
+                )
+                .flatMap { it.applyAndSend(response) }
+    }
+
     private fun error(message: String): String =
             jsonMapper
                     .write(
@@ -80,6 +105,8 @@ class AccountsHandler(
 
     companion object {
         private const val BASE_ACCOUNTS_PATH = "/api/accounts"
+        private const val ACCOUNT_ID_PATH_VARIABLE = "accountId"
+        private const val GET_ACCOUNT_PATH = "$BASE_ACCOUNTS_PATH/{$ACCOUNT_ID_PATH_VARIABLE}"
         const val CREATE_ACCOUNT_PATH = BASE_ACCOUNTS_PATH
     }
 }
