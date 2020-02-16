@@ -11,3 +11,5 @@ fun <A, B> Either<A, Mono<B>>.extractMono(): Mono<Either<A, B>> =
     }
 
 fun <A, B> errorValue(value: A): Either<A, B> = left(value)
+
+fun <A, B> leftEitherMono(value: A): Mono<Either<A,B>> = Mono.just(left(value))

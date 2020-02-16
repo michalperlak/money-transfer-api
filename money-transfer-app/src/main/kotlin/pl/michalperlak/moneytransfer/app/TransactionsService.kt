@@ -18,6 +18,8 @@ import pl.michalperlak.moneytransfer.repo.AccountsRepository
 import pl.michalperlak.moneytransfer.repo.TransactionsRepository
 import pl.michalperlak.moneytransfer.util.errorValue
 import pl.michalperlak.moneytransfer.util.extractMono
+import pl.michalperlak.moneytransfer.util.leftEitherMono
+import pl.michalperlak.moneytransfer.util.transform
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 
@@ -38,12 +40,10 @@ class TransactionsService(
                     .toMono()
                     .flatMap { deposit(it, transaction) }
 
-    private fun deposit(amount: Either<TransactionError, Money>,
-                        transaction: NewTransactionDto) =
-            when (val result = amount.map { deposit(it, transaction) }) {
-                is Either.Left -> Either.left(result.a).toMono()
-                is Either.Right -> result.b
-            }
+    private fun deposit(amount: Either<TransactionError, Money>, transaction: NewTransactionDto) =
+            amount
+                    .map { deposit(it, transaction) }
+                    .transform(::leftEitherMono) { it }
 
     private fun deposit(amount: Money, transaction: NewTransactionDto) =
             getAccount(transaction.destinationAccountId, DepositError.INVALID_DESTINATION_ACCOUNT)
@@ -66,12 +66,10 @@ class TransactionsService(
                     .toMono()
                     .flatMap { transfer(it, transaction) }
 
-    private fun transfer(amount: Either<TransactionError, Money>,
-                         transaction: NewTransactionDto) =
-            when (val result = amount.map { transfer(it, transaction) }) {
-                is Either.Left -> Either.left(result.a).toMono()
-                is Either.Right -> result.b
-            }
+    private fun transfer(amount: Either<TransactionError, Money>, transaction: NewTransactionDto) =
+            amount
+                    .map { transfer(it, transaction) }
+                    .transform(::leftEitherMono) { it }
 
     private fun transfer(amount: Money, transaction: NewTransactionDto) =
             getAccount(transaction.sourceAccountId, TransferError.INVALID_SOURCE_ACCOUNT)
@@ -81,18 +79,16 @@ class TransactionsService(
             sourceAccount
                     .toMono()
                     .flatMap {
-                        when (it) {
-                            is Either.Left -> Either.left(it.a).toMono()
-                            is Either.Right -> transfer(amount, it.b, transaction)
+                        it.transform(::leftEitherMono) { srcAccount ->
+                            transfer(amount, srcAccount, transaction)
                         }
                     }
 
     private fun transfer(amount: Money, sourceAccount: Account, transaction: NewTransactionDto) =
             getAccount(transaction.destinationAccountId, TransferError.INVALID_DEST_ACCOUNT)
                     .flatMap {
-                        when (it) {
-                            is Either.Left -> it.toMono()
-                            is Either.Right -> transfer(amount, sourceAccount, it.b)
+                        it.transform(::leftEitherMono) { destAccount ->
+                            transfer(amount, sourceAccount, destAccount)
                         }
                     }
 
@@ -103,17 +99,16 @@ class TransactionsService(
                     .extractMono()
 
     private fun getAccount(accountId: String?, error: TransactionError): Mono<Either<TransactionError, Account>> =
-            accountId
-                    ?.toMono()
-                    ?.map { AccountId.of(it) }
-                    ?.map {
+            Mono
+                    .justOrEmpty(accountId)
+                    .map { AccountId.of(it!!) }
+                    .map {
                         it
                                 .map { accountId ->
                                     accountsRepository.getAccount(accountId)
                                 }
                                 .mapLeft { error }
                     }
-                    ?.flatMap { it.extractMono() }
-                    ?.defaultIfEmpty(errorValue(error))
-                    ?: Mono.just(errorValue(error))
+                    .flatMap { it.extractMono() }
+                    .defaultIfEmpty(errorValue(error))
 }
