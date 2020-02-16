@@ -18,6 +18,8 @@ Build and run executable jar:
 
 `java -jar money-transfer-web-api/build/libs/money-transfer-web-api-1.0-SNAPSHOT-all.jar`
 
+The HTTP server will start on port 9090.
+
 ## Tech stack
 
  - Kotlin
@@ -189,3 +191,13 @@ Example success response:
     "sourceAccountId": "329ceea2-03cf-4eba-b5d6-c6ca81b70dc5"
 }
 ```
+
+## Known issues/areas for improvements
+
+ - redesign response codes to be more specific and client friendly
+ - add configuration from external sources, instead of hardcoded one
+ - add persistence
+ - add security stuff
+ - add api documentation generation as part of build process 
+ to keep it synchronized with the code
+ 
