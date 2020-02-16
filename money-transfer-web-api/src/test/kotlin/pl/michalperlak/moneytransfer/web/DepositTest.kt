@@ -9,17 +9,10 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import org.junit.jupiter.api.extension.ExtendWith
-import pl.michalperlak.moneytransfer.conf.ApiServerConfig
 import pl.michalperlak.moneytransfer.conf.ApiServerConfig.Companion.DEFAULT_PORT
-import pl.michalperlak.moneytransfer.core.domain.Currency
-import pl.michalperlak.moneytransfer.core.domain.Currency.PLN
-import pl.michalperlak.moneytransfer.core.domain.TransactionType.DEPOSIT
-import pl.michalperlak.moneytransfer.dto.NewAccountDto
 import pl.michalperlak.moneytransfer.dto.TransactionDto
-import pl.michalperlak.moneytransfer.web.handler.AccountsHandler
+import pl.michalperlak.moneytransfer.dto.TransactionType.DEPOSIT
 import pl.michalperlak.moneytransfer.web.handler.TransactionsHandler
-import pl.michalperlak.moneytransfer.web.json.MoshiJsonMapper
-import java.util.UUID
 
 @ExtendWith(ServerStarterExtension::class)
 internal class DepositTest {
@@ -99,7 +92,7 @@ internal class DepositTest {
     }
 
     @Test
-    fun `should return status 404 when account with id not found`() {
+    fun `should return status 400 with error when account with id not found`() {
         Given {
             port(DEFAULT_PORT)
             body("""
@@ -112,7 +105,7 @@ internal class DepositTest {
         } When {
             post(TransactionsHandler.CREATE_TRANSACTION_PATH)
         } Then {
-            statusCode(404)
+            statusCode(400)
             body("error", notNullValue())
         }
     }
@@ -143,20 +136,4 @@ internal class DepositTest {
                 { assertEquals(accountId, transaction.destinationAccountId) }
         )
     }
-
-    private fun createAccount(ownerId: String, currency: Currency = PLN): String {
-        val newAccountDto = NewAccountDto(ownerId = ownerId, currency = currency)
-        val mapper = MoshiJsonMapper()
-        val location = Given {
-            port(ApiServerConfig.DEFAULT_PORT)
-            body(mapper.write(newAccountDto))
-        } When {
-            post(AccountsHandler.CREATE_ACCOUNT_PATH)
-        } Extract {
-            header("Location")
-        }
-        return location.substringAfter("/api/accounts/")
-    }
-
-    private fun validOwnerId() = UUID.randomUUID().toString()
 }
