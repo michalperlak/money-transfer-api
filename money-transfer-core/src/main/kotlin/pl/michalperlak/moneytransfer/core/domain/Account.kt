@@ -26,7 +26,7 @@ class Account(
         return Deposit(transactionId = TransactionId.generate(), amount = amount, accountId = id)
     }
 
-    fun transfer(to: Account, amount: Money): Either<TransferError, Money> {
+    fun transfer(to: Account, amount: Money): Either<TransferError, Transaction> {
         if (currency != to.currency) {
             return Either.left(INCOMPATIBLE_CURRENCIES)
         }
@@ -48,6 +48,13 @@ class Account(
                 break
             }
         }
-        return Either.right(balanceRef.get())
+        return Either.right(
+                Transfer(
+                        transactionId = TransactionId.generate(),
+                        amount = amount,
+                        sourceAccountId = id,
+                        destAccountId = to.id
+                )
+        )
     }
 }

@@ -1,7 +1,6 @@
 package pl.michalperlak.moneytransfer.dto
 
 import com.squareup.moshi.JsonClass
-import pl.michalperlak.moneytransfer.core.domain.TransactionType
 
 @JsonClass(generateAdapter = true)
 data class TransactionDto(

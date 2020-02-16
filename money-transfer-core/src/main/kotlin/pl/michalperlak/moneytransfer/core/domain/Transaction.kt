@@ -10,3 +10,10 @@ class Deposit(
         amount: Money,
         val accountId: AccountId
 ) : Transaction(transactionId, amount)
+
+class Transfer(
+        transactionId: TransactionId,
+        amount: Money,
+        val sourceAccountId: AccountId,
+        val destAccountId: AccountId
+) : Transaction(transactionId, amount)

@@ -109,7 +109,7 @@ internal class AccountTransferTest {
         assertEquals(Money.of(20000), accountsTotal)
     }
 
-    private fun assertTransferError(expected: TransferError, result: Either<TransferError, Money>) {
+    private fun assertTransferError(expected: TransferError, result: Either<TransferError, Transaction>) {
         when (result) {
             is Either.Left -> assertSame(expected, result.a)
             is Either.Right -> fail { "Expected transfer error: $expected, but was: ${result.b}" }

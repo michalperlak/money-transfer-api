@@ -56,23 +56,14 @@ class TransactionsHandler(
                                         headers = jsonContentType(),
                                         body = just(jsonMapper.write(transactionDto))
                                 )
+                            }.getOrHandle { error ->
+                                ResponseSpec(
+                                        status = HttpResponseStatus.BAD_REQUEST,
+                                        headers = jsonContentType(),
+                                        body = just(error(error.message))
+                                )
                             }
-                            .switchIfEmpty(Mono.just(
-                                    ResponseSpec(
-                                            status = HttpResponseStatus.NOT_FOUND,
-                                            headers = jsonContentType(),
-                                            body = just(error("Dest account not found"))
-                                    )
-                            ))
-                }
-                .getOrHandle {
-                    Mono.just(
-                            ResponseSpec(
-                                    status = HttpResponseStatus.BAD_REQUEST,
-                                    headers = jsonContentType(),
-                                    body = just(error(it.message))
-                            )
-                    )
+
                 }
     }
 
