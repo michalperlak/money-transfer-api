@@ -26,7 +26,7 @@ internal class MoneyTest {
     fun `equality operator should return true when represented values are equal`() {
         // given
         val left = Money.of(BigDecimal.valueOf(10))
-        val right = Money.of("10.0000")
+        val right = Money.of(10.0000)
 
         // when
         val result = left == right
@@ -116,7 +116,7 @@ internal class MoneyTest {
     @Test
     fun `greater than or equal operator should return true when values are equal`() {
         // given
-        val left = Money.of("123")
+        val left = Money.of(123.0)
         val right = Money.of(123)
 
         // when
@@ -129,7 +129,7 @@ internal class MoneyTest {
     @Test
     fun `greater than or equal operator should return true when left value is greater`() {
         // given
-        val left = Money.of("123.567")
+        val left = Money.of(123.567)
         val right = Money.of(123)
 
         // when

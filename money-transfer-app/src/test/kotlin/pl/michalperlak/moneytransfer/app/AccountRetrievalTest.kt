@@ -9,7 +9,6 @@ import pl.michalperlak.moneytransfer.core.domain.Currency
 import pl.michalperlak.moneytransfer.core.domain.Currency.EUR
 import pl.michalperlak.moneytransfer.dto.AccountDto
 import pl.michalperlak.moneytransfer.dto.NewAccountDto
-import java.lang.IllegalStateException
 
 internal class AccountRetrievalTest {
 

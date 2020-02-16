@@ -2,6 +2,7 @@ package pl.michalperlak.moneytransfer.conf
 
 import pl.michalperlak.moneytransfer.web.handler.AccountsHandler
 import pl.michalperlak.moneytransfer.web.handler.ApiHandler
+import pl.michalperlak.moneytransfer.web.handler.TransactionsHandler
 import pl.michalperlak.moneytransfer.web.json.JsonMapper
 import pl.michalperlak.moneytransfer.web.json.MoshiJsonMapper
 
@@ -18,6 +19,10 @@ class ApiServerConfig private constructor(
         private fun createHandlers(appConfig: AppConfig, jsonMapper: JsonMapper): Iterable<ApiHandler> = listOf(
                 AccountsHandler(
                         appConfig.accountsService,
+                        jsonMapper
+                ),
+                TransactionsHandler(
+                        appConfig.transactionsService,
                         jsonMapper
                 )
         )

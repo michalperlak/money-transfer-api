@@ -15,7 +15,7 @@ class Account(
     val balance: Money
         get() = balanceRef.get()
 
-    fun deposit(amount: Money) {
+    fun deposit(amount: Money): Transaction {
         while (true) {
             val currentBalance = balanceRef.get()
             val newBalance = currentBalance + amount
@@ -23,6 +23,7 @@ class Account(
                 break
             }
         }
+        return Deposit(transactionId = TransactionId.generate(), amount = amount, accountId = id)
     }
 
     fun transfer(to: Account, amount: Money): Either<TransferError, Money> {
