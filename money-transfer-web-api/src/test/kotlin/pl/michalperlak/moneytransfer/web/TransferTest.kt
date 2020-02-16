@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import org.junit.jupiter.api.extension.ExtendWith
 import pl.michalperlak.moneytransfer.conf.ApiServerConfig.Companion.DEFAULT_PORT
+import pl.michalperlak.moneytransfer.core.domain.Currency.EUR
+import pl.michalperlak.moneytransfer.core.domain.Currency.PLN
 import pl.michalperlak.moneytransfer.core.domain.Money
 import pl.michalperlak.moneytransfer.dto.NewTransactionDto
 import pl.michalperlak.moneytransfer.dto.TransactionDto
@@ -130,6 +132,54 @@ internal class TransferTest {
                 	"amount": "100.00",
                     "sourceAccountId": "$sourceAccountId",
                     "destinationAccountId": "9203a2a2-cfb8-4ad1-a295-8f33f30ee366"
+                }
+            """.trimIndent())
+        } When {
+            post(CREATE_TRANSACTION_PATH)
+        } Then {
+            statusCode(400)
+            body("error", notNullValue())
+        }
+    }
+
+    @Test
+    fun `should return status 400 with error when accounts have different currencies`() {
+        // given
+        val sourceAccountId = createAccount(validOwnerId(), currency = PLN)
+        deposit(sourceAccountId, Money.of(1000))
+        val destAccountId = createAccount(validOwnerId(), currency = EUR)
+        Given {
+            port(DEFAULT_PORT)
+            body("""
+                {
+                	"type": "TRANSFER",
+                	"amount": "100.00",
+                    "sourceAccountId": "$sourceAccountId",
+                    "destinationAccountId": "$destAccountId"
+                }
+            """.trimIndent())
+        } When {
+            post(CREATE_TRANSACTION_PATH)
+        } Then {
+            statusCode(400)
+            body("error", notNullValue())
+        }
+    }
+
+    @Test
+    fun `should return status 400 with error when insufficient funds`() {
+        // given
+        val sourceAccountId = createAccount(validOwnerId())
+        deposit(sourceAccountId, Money.of(1000))
+        val destAccountId = createAccount(validOwnerId())
+        Given {
+            port(DEFAULT_PORT)
+            body("""
+                {
+                	"type": "TRANSFER",
+                	"amount": "2000.00",
+                    "sourceAccountId": "$sourceAccountId",
+                    "destinationAccountId": "$destAccountId"
                 }
             """.trimIndent())
         } When {
