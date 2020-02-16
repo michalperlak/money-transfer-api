@@ -1,5 +1,7 @@
 package pl.michalperlak.moneytransfer.core.domain
 
+import arrow.core.Either
+import pl.michalperlak.moneytransfer.core.util.of
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_EVEN
 import java.util.Objects
@@ -37,11 +39,18 @@ class Money private constructor(
     }
 
     companion object {
-        fun of(value: String) = of(BigDecimal(value))
+        fun of(value: String) = Either.of { of(BigDecimal(value)) }
 
         fun of(value: Long): Money = of(BigDecimal.valueOf(value))
 
-        fun of(value: BigDecimal): Money = Money(value.setScale(2, HALF_EVEN))
+        fun of(value: Double): Money = of(BigDecimal.valueOf(value))
+
+        fun of(value: BigDecimal): Money {
+            if (value < BigDecimal.ZERO) {
+                throw IllegalArgumentException("Invalid money value: $value")
+            }
+            return Money(value.setScale(2, HALF_EVEN))
+        }
 
         val ZERO = Money(BigDecimal.ZERO.setScale(2, HALF_EVEN))
     }
